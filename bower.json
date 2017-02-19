@@ -1,0 +1,18 @@
+{
+  "name": "number-game",
+  "description": "",
+  "main": "app.js",
+  "license": "ISC",
+  "homepage": "https://github.com/mohit-tyagi/node-test",
+  "ignore": [
+    "**/.*",
+    "node_modules",
+    "bower_components",
+    "test",
+    "tests"
+  ],
+  "dependencies": {
+    "jquery": "^3.1.1",
+    "blueimp-file-upload": "^9.17.0"
+  }
+}

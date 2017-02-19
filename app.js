@@ -1,62 +1,58 @@
-var fs = require('fs'),
-    readline = require('readline'),
-    config = require('./config.json');
-var counter = 0;
-var numberListCounter = 0;
-var digitalNumberString = [];
-var resultNumberList = [];
-var tmpBit = {};
-var rd = readline.createInterface({
-    input: fs.createReadStream('./test/input.txt')
+'use strict';
+
+const Hapi = require('hapi');
+const server = new Hapi.Server();
+const asciiConverter = require('./custom-module/ascii-number-converter');
+
+server.connection({
+    host: 'localhost',
+    port: 8000
 });
 
-rd.on('line', function (line) {
-    if (line.trim() == '') {
-        digitalNumberString.push(tmpBit);
-        counter = 0;
-        numberListCounter++;
-        tmpBit = {};
-    } else {
-        tmpBit[counter] = line;
-        counter++;
+server.register(require('inert'), (err) => {
+    if (err) {
+        throw err;
     }
 });
 
-rd.on('close', function () {
-    digitalNumberString.forEach(function (numSymbol) {
-        resultNumberList.push(convertDigitalFigureToNumber(numSymbol));
-    });
-    console.log(resultNumberList);
-});
-
-function convertDigitalFigureToNumber(digitalNumbers) {
-    var len = 27;
-    var counter = 0;
-    var str = '';
-    var finalNumber = '';
-    for (var num = 0; num < len; num++) {
-        if(digitalNumbers[0][num] || digitalNumbers[0][num] === 0){
-            str += digitalNumbers[0][num];
-        }else{
-            str += ' ';
-        }
-        str += digitalNumbers[1][num] +
-            digitalNumbers[2][num];
-        if (counter == 2) {
-            counter = 0;
-            finalNumber+=getNumber(str);
-            str = '';
-        }else{
-            counter++;
+// Directory Handler
+server.route({
+    method: 'GET',
+    path: '/{param*}',
+    handler: {
+        directory: {
+            path: 'public'
         }
     }
-    return finalNumber;
-}
+});
 
-function getNumber(digitSymbol) {
-    if(config[digitSymbol] || config[digitSymbol] === 0){
-        return config[digitSymbol];
-    }else{
-        return digitSymbol;
+// Add the route
+server.route({
+    method: 'POST',
+    path:'/upload-file',
+    config: {
+        payload: {
+            output: 'stream',
+            parse: true,
+            allow: 'multipart/form-data'
+        },
+        handler: function (request, reply) {
+            var data = request.payload;
+            if (data.file) {
+                asciiConverter(data.file, function(err, result){
+                    return reply(JSON.stringify(result));
+                });
+            }else{
+                return reply({msg:'result not found.'});
+            }
+        }
     }
-}
+});
+
+// Start the server
+server.start((err) => {
+    if (err) {
+        throw err;
+    }
+    console.log('Server running at:', server.info.uri);
+});
