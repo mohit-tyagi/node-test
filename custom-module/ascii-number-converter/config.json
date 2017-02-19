@@ -9,5 +9,6 @@
   "  |___ | ": "2",
   " | ___ ||": "9",
   " ||___ ||": "8",
-  "lineLength": 27
+  "lineLength": 27,
+  "invalidSymbol": "?"
 }

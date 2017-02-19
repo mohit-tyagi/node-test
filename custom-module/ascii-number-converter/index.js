@@ -8,7 +8,7 @@ function convertDigitalFigureToNumber(digitalNumbers) {
     var counter = 0;
     var str = '';
     var finalNumber = '';
-    try{
+    try {
         for (var num = 0; num < len; num++) {
             if (digitalNumbers[0][num]) {
                 str += digitalNumbers[0][num];
@@ -25,8 +25,11 @@ function convertDigitalFigureToNumber(digitalNumbers) {
                 counter++;
             }
         }
-    }catch (e){
+    } catch (e) {
         finalNumber = 'error!';
+    }
+    if (finalNumber.indexOf(config.invalidSymbol) >= 0) {
+        finalNumber += '  ILLEGAL';
     }
     return finalNumber;
 }
@@ -34,7 +37,7 @@ function getNumber(digitSymbol) {
     if (config[digitSymbol]) {
         return config[digitSymbol];
     } else {
-        return digitSymbol;
+        return config.invalidSymbol;
     }
 }
 
