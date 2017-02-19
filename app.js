@@ -3,6 +3,7 @@
 const Hapi = require('hapi');
 const server = new Hapi.Server();
 const asciiConverter = require('./custom-module/ascii-number-converter');
+const mathGame = require('./custom-module/math-game');
 
 server.connection({
     host: 'localhost',
@@ -45,6 +46,18 @@ server.route({
             }else{
                 return reply({msg:'result not found.'});
             }
+        }
+    }
+});
+
+// Route for maths computation
+server.route({
+    method: 'GET',
+    path:'/math-result',
+    config: {
+        handler: function (request, reply) {
+            var lines = mathGame.printMarkoPolo();
+            return reply(lines);
         }
     }
 });
